@@ -1,0 +1,366 @@
+{
+	"info": {
+		"_postman_id": "13738236-66f8-4fad-84dd-4fd77c3c0aa8",
+		"name": "Hire_me",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "44594517"
+	},
+	"item": [
+		{
+			"name": "job tasks",
+			"item": [
+				{
+					"name": "edit job",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "5|u8HjusjSRt2Az3kJAwzGRX7uKMJ8alWL7IYbr3mx04cdb5c4",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/api/jobs/1?type=part-time",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"jobs",
+								"1"
+							],
+							"query": [
+								{
+									"key": "type",
+									"value": "part-time"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get job",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "5|u8HjusjSRt2Az3kJAwzGRX7uKMJ8alWL7IYbr3mx04cdb5c4",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/api/jobs/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"jobs",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "profile tasks",
+			"item": []
+		},
+		{
+			"name": "Public Routes",
+			"item": []
+		},
+		{
+			"name": "company tasks",
+			"item": [
+				{
+					"name": "all company",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "5|u8HjusjSRt2Az3kJAwzGRX7uKMJ8alWL7IYbr3mx04cdb5c4",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/api/companies",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"companies"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "edit company",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "2|cfXAT41cXNVQdKrv5C1HcgWZZHktaZRYcwbHRrMT0a1e4b9a",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/api/companies/2?address=mansoura&location=mansd&description=sdsdsdsd&phone=323232323",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"companies",
+								"2"
+							],
+							"query": [
+								{
+									"key": "address",
+									"value": "mansoura"
+								},
+								{
+									"key": "location",
+									"value": "mansd"
+								},
+								{
+									"key": "description",
+									"value": "sdsdsdsd"
+								},
+								{
+									"key": "phone",
+									"value": "323232323"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete company",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "6|C4SPkip9i8HQEbyYVsiEAIqNUhacXwMrDTejSclNd853bb3c",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/api/companies/11",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"companies",
+								"11"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add job",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "2|O0rBBIV9KoD61Qz8Q78KzJf1bOadpCuc99XyvDPu653dba31",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/api/companies/11/jobs?title=backend laravel&details=ssssssssssssssssssssss1111&location=ssssssssssssssssssssssss1111&salary=2221111&type=part-time",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"companies",
+								"11",
+								"jobs"
+							],
+							"query": [
+								{
+									"key": "title",
+									"value": "backend laravel"
+								},
+								{
+									"key": "details",
+									"value": "ssssssssssssssssssssss1111"
+								},
+								{
+									"key": "location",
+									"value": "ssssssssssssssssssssssss1111"
+								},
+								{
+									"key": "salary",
+									"value": "2221111"
+								},
+								{
+									"key": "type",
+									"value": "part-time"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get jobs",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "get app for company",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "get app2 for company",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "auth",
+			"item": []
+		},
+		{
+			"name": "applications tasks",
+			"item": []
+		},
+		{
+			"name": "applicant tasks",
+			"item": []
+		},
+		{
+			"name": "admin tasks",
+			"item": []
+		}
+	]
+}
