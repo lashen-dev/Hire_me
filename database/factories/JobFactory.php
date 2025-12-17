@@ -24,7 +24,7 @@ class JobFactory extends Factory
             'company_id' => Company::inRandomOrder()->first()->id,
             'details' => $this->faker->text(200),
             'location' => $this->faker->city(),      
-            'salary' => $this->faker->numberBetween(30000, 120000),
+            'salary' => $this->faker->numberBetween(7000, 20000),
             'type' => $this->faker->randomElement(['full-time', 'part-time']),
             'is_available' => $this->faker->randomElement([true, false]),
         ];

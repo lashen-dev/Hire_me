@@ -37,11 +37,11 @@ class RolePermissionSeeder extends Seeder
                 'view-applicants-company',
                 'manage-applicants-apply',
                 'answer-application',
-                'compelte-company-profile',
+                'complete-company-profile',
                 // Applicant permissions
                 'apply-job', // Consolidated 'can-apply-job' and 'apply-job'
                 'cancel-application',
-                'compelte-applicant-profile',
+                'complete-applicant-profile',
                 // Shared permissions
                 'view-jobs',
                 'view-company-profile',
@@ -111,7 +111,7 @@ class RolePermissionSeeder extends Seeder
                 'view-applicantions',
                 'view-applicant-profile',
                 'view-company-profile',
-                'compelte-applicant-profile',
+                'complete-applicant-profile',
             ]);
 
             

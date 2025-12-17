@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('jobs', function (Blueprint $table) {
             $table->id();
             $table->foreignId('company_id')->constrained()->onDelete('cascade');
-            $table->string('title');
+            $table->string('title')->index();
             $table->string('details');
-            $table->string('location');
-            $table->string('salary');
+            $table->string('location')->index();
+            $table->string('salary')->index();
             $table->enum( 'type' , ['full-time', 'part-time'] )->default('full-time');
             $table->boolean('is_available')->default(true);
             $table->timestamps();

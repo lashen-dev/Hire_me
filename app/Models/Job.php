@@ -37,6 +37,19 @@ class Job extends Model
         });
     }
 
+    public function scopeSearch($query, array $filters)
+    {
+        if ($filters['title'] ?? false) {
+            $query->where('title', 'like', '%' . $filters['title'] . '%');
+        }
+        if ($filters['location'] ?? false) {
+            $query->where('location', 'like', '%' . $filters['location'] . '%');
+        }
+        if ($filters['salary'] ?? false) {
+            $query->where('salary', '>=', $filters['salary']);
+        }
+    }    
+
     
     
 
