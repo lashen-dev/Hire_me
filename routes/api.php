@@ -8,6 +8,7 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\OtpController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -16,6 +17,7 @@ use Illuminate\Support\Facades\Route;
 //public routes
 Route::get('/home', [HomeController::class, 'index']);
 Route::get('/search', [SearchController::class, 'search']);
+Route::post('/verify-otp', [OtpController::class, 'verifyOtp']);
 
 // مسارات المصادقة (Authentication Routes)
 Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:5,1');
