@@ -45,7 +45,7 @@ class CompanyController extends Controller
         $user = Auth::user();
         $company = Company::where('user_id', $user->id)->first();
         $company->update($request->validated());
-        
+
         return $this->success($company, 'Company updated successfully', 200);
     }
 
