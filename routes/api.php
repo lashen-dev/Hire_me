@@ -41,7 +41,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('{company}/jobs', [CompanyController::class, 'getJobs'])->middleware(['CheckPermission:view-jobs','IsProfileComplete']);
         Route::get('{company}/applicants', [CompanyController::class, 'getApplicants'])->middleware(['CheckPermission:view-applicants-company', 'IsProfileComplete']);
         Route::get('{company}/applications', [CompanyController::class, 'getApplications'])->middleware(['CheckPermission:view-applications', 'IsProfileComplete']);
-        
+
 
         });
 
@@ -62,7 +62,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('job/{id}', [AdminController::class, 'destroyJob'])->middleware('CheckPermission:delete-jobs');
         Route::post('notifications', [AdminController::class, 'sendNotification'])->middleware('CheckPermission:manage-users');
     });
-    
+
     // مسارات الوظائف (Job Routes)
     Route::prefix('jobs')->group(function () {
         Route::apiResource('', JobController::class)->parameters(['' => 'job'])->except('show');

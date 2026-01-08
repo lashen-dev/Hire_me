@@ -11,5 +11,5 @@ Route::get('/', function () {
 Route::get('/login-test', function () {
     return view('google_login');
 });
-Route::get('auth/redirect', [GoogleController::class, 'redirect'])->name('google.login');
-Route::get('auth/google/callback', [GoogleController::class, 'callback'])->name('google.callback');
+Route::get('auth/{driver}/redirect', [GoogleController::class, 'redirect']);
+Route::get('auth/{driver}/callback', [GoogleController::class, 'callback']);
