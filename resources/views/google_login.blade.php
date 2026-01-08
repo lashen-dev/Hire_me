@@ -34,12 +34,6 @@
                 <span>المتابعة باستخدام Facebook</span>
             </a>
 
-            <a href="{{ route('social.login', 'github') }}"
-               class="flex items-center justify-center w-full bg-[#24292e] text-white font-semibold py-3 px-4 rounded-xl shadow-md hover:bg-[#2f363d] transition duration-300 transform hover:-translate-y-1">
-                <i class="fa-brands fa-github text-xl ml-3"></i>
-                <span>المتابعة باستخدام GitHub</span>
-            </a>
-
         </div>
 
         <div class="mt-8 relative flex py-3 items-center">

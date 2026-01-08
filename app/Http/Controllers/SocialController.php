@@ -3,25 +3,34 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Traits\HttpResponses;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Socialite\Facades\Socialite;
 use Pest\Support\Str;
 
-class GoogleController extends Controller
+class SocialController extends Controller
 {
+    use HttpResponses;
 
-    public function redirect()
+    public function redirect(string $driver)
     {
-        return Socialite::driver('google')->redirect();
+        if (!in_array($driver, ['facebook', 'google'])) {
+            return $this->error(null, 'InValid Driver', 403);
+        }
+        return Socialite::driver($driver)->redirect();
     }
 
-    public function callback()
+    public function callback(string $driver)
     {
         try {
-            $googleUser = Socialite::driver('google')->stateless()->user();
 
-            $user = User::where('email', $googleUser->getEmail())->first();
+            if (!in_array($driver, ['facebook', 'google'])) {
+                return $this->error(null, 'InValid Driver', 403);
+            }
+            $socialUser = Socialite::driver($driver)->stateless()->user();
+
+            $user = User::where('email', $socialUser->getEmail())->first();
 
             if ($user) {
                 $user->update([
@@ -29,8 +38,8 @@ class GoogleController extends Controller
                 ]);
             } else {
                 $user = User::create([
-                    'name' => $googleUser->getName(),
-                    'email' => $googleUser->getEmail(),
+                    'name' => $socialUser->getName(),
+                    'email' => $socialUser->getEmail(),
                     'password' => Hash::make(Str::random(10)),
                     'role' => 'applicant',
                     'email_verified_at' => now(),
