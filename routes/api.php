@@ -5,6 +5,7 @@ use App\Http\Controllers\ApplicantController;
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\NotificationController;
@@ -42,7 +43,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('{company}/jobs', [CompanyController::class, 'getJobs'])->middleware(['CheckPermission:view-jobs','IsProfileComplete']);
         Route::get('{company}/applicants', [CompanyController::class, 'getApplicants'])->middleware(['CheckPermission:view-applicants-company', 'IsProfileComplete']);
         Route::get('{company}/applications', [CompanyController::class, 'getApplications'])->middleware(['CheckPermission:view-applications', 'IsProfileComplete']);
-
+        Route::get('applications/{id}/download-cv', [DownloadController::class, 'downloadCv']);
 
         });
 

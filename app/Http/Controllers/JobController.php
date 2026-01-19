@@ -10,10 +10,12 @@ use App\Http\Resources\JobListResource;
 use App\Models\Application;
 use App\Models\Job;
 use App\Notifications\NewJobApplication;
+use App\Services\FileUploadService;
 use App\Traits\HttpResponses;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 use function Pest\Laravel\json;
 
@@ -68,12 +70,11 @@ class JobController extends Controller
 
 
 
-    public function apply(ApplyRequest $request, $jobId)
+
+    public function apply(ApplyRequest $request, $jobId, FileUploadService $fileService)
     {
-        // Apply for a job
         $user = $request->user();
         $job = Job::findOrFail($jobId);
-        $company = $job->company;
 
         $exists = Application::where('applicant_id', $user->applicant->id)
             ->where('job_id', $jobId)
@@ -82,22 +83,42 @@ class JobController extends Controller
         if ($exists) {
             return $this->success(null, 'You have already applied for this job', 409);
         }
-        Application::create([
-            'applicant_id' => $user->applicant->id,
-            'job_id' => $job->id,
-            'status' => 'pending',
-            'cv' => $request->file('cv')->store('cvs', 'public'), // Store CV in public storage
-        ]);
 
+        DB::beginTransaction();
+        $cvPath = null;
 
+        try {
 
-        $company->notify(new NewJobApplication(
-            $job->title,
-            $user->applicant->full_name,
-            $job->id
-        ));
+            if ($request->hasFile('cv')) {
+                $cvPath = $fileService->upload($request->file('cv'), 'cvs', 'local');
+            }
 
-        return $this->success(null, 'Application submitted successfully', 201);
+            Application::create([
+                'applicant_id' => $user->applicant->id,
+                'job_id'       => $job->id,
+                'status'       => 'pending',
+                'cv'           => $cvPath,
+            ]);
+
+            $job->company->notify(new NewJobApplication(
+                $job->title,
+                $user->applicant->full_name,
+                $job->id
+            ));
+
+            DB::commit();
+
+            return $this->success(null, 'Application submitted successfully', 201);
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+            if ($cvPath) {
+                $fileService->delete($cvPath, 'local');
+            }
+
+            return $this->error(null, 'Something went wrong', 500);
+        }
     }
 
     public function getApplicants($jobId)
