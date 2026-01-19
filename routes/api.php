@@ -75,8 +75,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // مسارات الملفات الشخصية (Profile Routes)
     Route::prefix('profile')->group(function () {
         Route::get('{id}', [UserController::class, 'profile'])->middleware('CheckPermission:view-applicant-profile|view-company-profile');
-        Route::put('company/{id}', [CompanyController::class, 'update'])->middleware(['IsCompany', 'CheckPermission:complete-company-profile']);
-        Route::put('applicant/{id}', [ApplicantController::class, 'update'])->middleware(['IsApplicant', 'CheckPermission:complete-company-profile']);
+        Route::put('company', [CompanyController::class, 'update'])->middleware('IsCompany');
+        Route::put('applicant', [ApplicantController::class, 'update'])->middleware('IsApplicant');
     });
 
 

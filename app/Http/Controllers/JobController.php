@@ -74,7 +74,7 @@ class JobController extends Controller
         $user = $request->user();
         $job = Job::findOrFail($jobId);
         $company = $job->company;
-   
+
         $exists = Application::where('applicant_id', $user->applicant->id)
             ->where('job_id', $jobId)
             ->exists();
