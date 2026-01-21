@@ -22,14 +22,14 @@ class ApplicantRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'experience_level' => 'required|in:junior,mid,seniour',
-            'address' => 'required|string|max:255',
-            'skills' => 'nullable',
-            'location' => 'required|string|max:255',
-            'phone' => 'required|string|max:15',
-            'website' => 'nullable|url|max:255',
-            'company_id' => 'nullable|exists:companies,id',
-
+            'experience_level' => 'sometimes|required|in:junior,mid,senior',
+            'address' => 'sometimes|required|string|max:255',
+            'location' => 'sometimes|required|string|max:255',
+            'phone' => 'sometimes|required|string|max:15',
+            'skills' => 'sometimes|nullable|string',
+            'website' => 'sometimes|nullable|url|max:255',
+            'company_id' => 'sometimes|nullable|exists:companies,id',
+            'image' => 'sometimes|nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ];
     }
 }
