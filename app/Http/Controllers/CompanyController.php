@@ -8,6 +8,7 @@ use App\Http\Requests\JobRequest;
 use App\Http\Requests\UpdateJobRequest;
 use App\Models\Company;
 use App\Models\Job;
+use App\Services\FileUploadService;
 use App\Traits\HttpResponses;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -37,14 +38,21 @@ class CompanyController extends Controller
         }
         $company->profile;
         return $this->success($company, 'Company retrieved successfully', 200);
-
     }
 
-    public function update(CompanyRequest $request)
+    public function update(CompanyRequest $request, FileUploadService $fileService)
     {
         $user = Auth::user();
         $company = Company::where('user_id', $user->id)->first();
-        $company->update($request->validated());
+        $validated = $request->validated();
+        if ($request->hasFile('logo')) {
+            if ($company->logo) {
+                $fileService->delete($company->logo);
+            }
+            $logoPath = $fileService->upload($request->file('logo'), 'company_logos');
+            $validated['logo'] = $logoPath;
+        }
+        $company->update($validated);
 
         return $this->success($company, 'Company updated successfully', 200);
     }
@@ -56,7 +64,7 @@ class CompanyController extends Controller
         $company = Company::find($id);
 
         if ($company) {
-        $company->delete();
+            $company->delete();
         } else {
             return $this->error(null, 'Company not found', 404);
         }
@@ -87,7 +95,6 @@ class CompanyController extends Controller
 
         $new_job = Job::create($validated);
         return $this->success($new_job, 'Job created successfully', 201);
-
     }
     public function getJobs($id)
     {
@@ -129,7 +136,4 @@ class CompanyController extends Controller
         }
         return $this->success($applications, 'Applications retrieved successfully', 200);
     }
-
-
-
 }

@@ -6,6 +6,7 @@ use App\Http\Requests\ApplicantRequest;
 use App\Http\Requests\ApplicantUpdateRequest;
 use App\Http\Resources\ApplicantResource;
 use App\Models\Applicant;
+use App\Services\FileUploadService;
 use App\Traits\HttpResponses;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
@@ -27,7 +28,7 @@ class ApplicantController extends Controller
         }
         return $this->success(new ApplicantResource($applicant), 'Applicant retrieved successfully', 200);
     }
-    public function update(ApplicantRequest $request)
+    public function update(ApplicantRequest $request , FileUploadService $fileService)
     {
         $user = Auth::user();
 
@@ -41,7 +42,10 @@ class ApplicantController extends Controller
         $validated = $request->validated();
 
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('applicant_images', 'public');
+            if ($applicant->image) {
+                $fileService->delete($applicant->image);
+            }
+            $imagePath = $fileService->upload( $request->file('image') , 'applicant_images');
             $validated['image'] = $imagePath;
         }
 
