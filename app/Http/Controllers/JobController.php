@@ -21,7 +21,7 @@ use function Pest\Laravel\json;
 
 class JobController extends Controller
 {
-    use HttpResponses , Notifiable;
+    use HttpResponses, Notifiable;
     public function index()
     {
 
@@ -76,47 +76,61 @@ class JobController extends Controller
         $user = $request->user();
         $job = Job::findOrFail($jobId);
 
-        $exists = Application::where('applicant_id', $user->applicant->id)
+        $application = Application::where('applicant_id', $user->applicant->id)
             ->where('job_id', $jobId)
-            ->exists();
-
-        if ($exists) {
-            return $this->success(null, 'You have already applied for this job', 409);
-        }
+            ->first();
 
         DB::beginTransaction();
-        $cvPath = null;
+        $newCvPath = null;
 
         try {
-
             if ($request->hasFile('cv')) {
-                $cvPath = $fileService->upload($request->file('cv'), 'cvs', 'local');
+                $newCvPath = $fileService->upload($request->file('cv'), 'cvs', 'local');
             }
 
-            Application::create([
-                'applicant_id' => $user->applicant->id,
-                'job_id'       => $job->id,
-                'status'       => 'pending',
-                'cv'           => $cvPath,
-            ]);
+            if ($application) {
+                if ($application->status !== 'pending') {
+                    if ($newCvPath) $fileService->delete($newCvPath, 'local');
+                    return $this->error(null, 'Cannot update application after it has been reviewed', 400);
+                }
 
-            $job->company->notify(new NewJobApplication(
-                $job->title,
-                $user->applicant->full_name,
-                $job->id
-            ));
+                if ($application->cv) {
+                    $fileService->delete($application->cv, 'local');
+                }
+
+                $application->update([
+                    'cv' => $newCvPath,
+                    'notes' => $request->input('notes', $application->notes),
+                ]);
+
+                $message = 'Application CV updated successfully';
+            } else {
+
+                Application::create([
+                    'applicant_id' => $user->applicant->id,
+                    'job_id'       => $job->id,
+                    'status'       => 'pending',
+                    'cv'           => $newCvPath,
+                    'notes'        => $request->input('notes'),
+                ]);
+
+                $job->company->notify(new NewJobApplication(
+                    $job->title,
+                    $user->applicant->full_name,
+                    $job->id
+                ));
+
+                $message = 'Application submitted successfully';
+            }
 
             DB::commit();
-
-            return $this->success(null, 'Application submitted successfully', 201);
+            return $this->success(null, $message, 200);
 
         } catch (\Exception $e) {
-
             DB::rollBack();
-            if ($cvPath) {
-                $fileService->delete($cvPath, 'local');
+            if ($newCvPath) {
+                $fileService->delete($newCvPath, 'local');
             }
-
             return $this->error(null, 'Something went wrong', 500);
         }
     }
