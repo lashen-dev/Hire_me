@@ -21,12 +21,12 @@ class UpdateJobRequest extends FormRequest
      */
     public function rules(): array
     {
-        
+
         return [
             'title' => 'sometimes|string|max:255',
             'details' => 'sometimes|string',
             'salary' => 'sometimes|numeric|min:0',
-            'type' => 'required|in:full-time,part-time',
+            'type' => 'sometimes|in:full-time,part-time',
         ];
     }
 }

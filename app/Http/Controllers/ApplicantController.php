@@ -15,10 +15,12 @@ use Illuminate\Support\Facades\Auth;
 class ApplicantController extends Controller
 {
     use HttpResponses , Notifiable;
-    public function index()
+    public function index(Request $request)
     {
-        $applicants = Applicant::all();
-        return $this->success(ApplicantResource::collection($applicants), 'Applicants retrieved successfully', 200);
+        $applicants = Applicant::query()->filter($request->all())->latest()->paginate(10);
+
+        return $this->success($applicants, 'Applicants retrieved successfully');
+
     }
     public function show($id)
     {

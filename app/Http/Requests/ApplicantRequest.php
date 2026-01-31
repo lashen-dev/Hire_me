@@ -26,7 +26,7 @@ class ApplicantRequest extends FormRequest
             'address' => 'sometimes|required|string|max:255',
             'location' => 'sometimes|required|string|max:255',
             'phone' => 'sometimes|required|string|max:15',
-            'skills' => 'sometimes|nullable|string',
+            'skills' => 'sometimes|required|string',
             'website' => 'sometimes|nullable|url|max:255',
             'company_id' => 'sometimes|nullable|exists:companies,id',
             'image' => 'sometimes|nullable|image|mimes:jpeg,png,jpg,gif|max:2048',

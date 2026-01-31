@@ -8,7 +8,7 @@ use Illuminate\Notifications\Notifiable;
 class Applicant extends Model
 {
     use Notifiable;
-    
+
     protected $fillable = [
         'name',
         'skills',
@@ -19,8 +19,8 @@ class Applicant extends Model
         'user_id',
         'company_id',
         'image'
-        
-        
+
+
     ];
 
     // Define any relationships or additional methods here
@@ -39,5 +39,19 @@ class Applicant extends Model
         return $this->belongsToMany(Job::class,  'applications', 'applicant_id', 'job_id')
             ->withPivot('status', 'cv')
             ->withTimestamps();
-    }        
+    }
+
+    public function scopefilter($query, array $filters)
+    {
+        if ($filters['company_id'] ?? false) {
+            $query->where('company_id', $filters['company_id']);
+        }
+        if ($filters['name'] ?? false) {
+            $query->where('name', 'like', '%' . $filters['name'] . '%');
+        }
+
+        if ($filters['skills'] ?? false) {
+            $query->where('skills', 'like', '%' . $filters['skills'] . '%');
+        }
+    }
 }
