@@ -8,12 +8,14 @@ use App\Http\Requests\UpdateJobRequest;
 use App\Http\Resources\JobDetailResource;
 use App\Http\Resources\JobListResource;
 use App\Models\Application;
+use App\Models\Company;
 use App\Models\Job;
 use App\Notifications\NewJobApplication;
 use App\Services\FileUploadService;
 use App\Traits\HttpResponses;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
@@ -22,14 +24,14 @@ use function Pest\Laravel\json;
 class JobController extends Controller
 {
     use HttpResponses, Notifiable;
-    public function index()
+    public function index(Request $request)
     {
-
-        return Cache::remember('jobs', 350, function () {
-            $jobs = Job::all();
-            $formattedJobs = JobListResource::collection($jobs)->resolve();
-            return $this->success($formattedJobs, 'Jobs retrieved successfully', 200);
-        });
+        $jobs = Job::with('company')
+            ->filter($request->all())
+            ->latest()
+            ->paginate(10);
+        $formattedJobs = JobListResource::collection($jobs);
+        return $this->success($formattedJobs, 'Jobs retrieved successfully', 200);
     }
 
 
@@ -43,7 +45,13 @@ class JobController extends Controller
     public function store(JobRequest $request)
     {
         // Create a new job
+        $user = Auth::user();
+        $company = Company::where('user_id', $user->id);
+        if (!$company) {
+            return $this->error(null, 'You must have a company profile to post a job', 403);
+        }
         $validated = $request->validated();
+        $validated['company_id'] = $company->id;
 
         $job = Job::create($validated);
         return $this->success($job, 'Job created successfully', 201);
@@ -125,7 +133,6 @@ class JobController extends Controller
 
             DB::commit();
             return $this->success(null, $message, 200);
-
         } catch (\Exception $e) {
             DB::rollBack();
             if ($newCvPath) {

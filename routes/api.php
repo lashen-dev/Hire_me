@@ -37,10 +37,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/notifications', [NotificationController::class, 'index']);
 
     // مسارات الشركات (Company Routes)
-    Route::prefix('companies')->middleware('IsCompany')->group(function () {
+    Route::prefix('companies')->group(function () {
         Route::apiResource('/', CompanyController::class)->parameters(['' => 'company'])->except('store');
         Route::post('{company}/jobs', [CompanyController::class, 'addJob'])->middleware([ 'CheckPermission:post-job' , 'IsProfileComplete']);
-        Route::get('{company}/jobs', [CompanyController::class, 'getJobs'])->middleware(['CheckPermission:view-jobs','IsProfileComplete']);
         Route::get('{company}/applicants', [CompanyController::class, 'getApplicants'])->middleware(['CheckPermission:view-applicants-company', 'IsProfileComplete']);
         Route::get('{company}/applications', [CompanyController::class, 'getApplications'])->middleware(['CheckPermission:view-applications', 'IsProfileComplete']);
         Route::get('applications/{id}/download-cv', [DownloadController::class, 'downloadCv']);
@@ -58,7 +57,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('admin')->middleware('IsAdmin')->group(function () {
         Route::get('companies', [AdminController::class, 'getCompanies'])->middleware('CheckPermission:view-companies');
         Route::get('applicants', [AdminController::class, 'getApplicants'])->middleware('CheckPermission:view-applicants');
-        Route::get('jobs', [AdminController::class, 'getJobs'])->middleware('CheckPermission:view-jobs');
         Route::delete('company/{id}', [AdminController::class, 'destroyCompany'])->middleware('CheckPermission:delete-companies');
         Route::delete('applicant/{id}', [AdminController::class, 'destroyApplicant'])->middleware('CheckPermission:delete-applicants');
         Route::delete('job/{id}', [AdminController::class, 'destroyJob'])->middleware('CheckPermission:delete-jobs');

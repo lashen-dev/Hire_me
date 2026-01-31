@@ -24,8 +24,6 @@ class CompanyController extends Controller
             return $this->error(null, 'No companies found', 404);
         }
 
-
-
         return $this->success($all_company, 'Companies retrieved successfully', 200);
     }
 
@@ -44,6 +42,9 @@ class CompanyController extends Controller
     {
         $user = Auth::user();
         $company = Company::where('user_id', $user->id)->first();
+        if (!$company) {
+            return $this->error(null, 'Company profile not found', 404);
+        }
         $validated = $request->validated();
         if ($request->hasFile('logo')) {
             if ($company->logo) {
@@ -61,54 +62,28 @@ class CompanyController extends Controller
 
     public function destroy($id)
     {
+        $user = Auth::user();
+
         $company = Company::find($id);
 
-        if ($company) {
-            $company->delete();
-        } else {
+        if (!$company) {
             return $this->error(null, 'Company not found', 404);
         }
+
+        $isAdmin = $user->hasPermissionTo('delete-companies');
+
+        $isOwner = $user->id === $company->user_id;
+
+        if (!$isAdmin && !$isOwner) {
+            return $this->error(null, 'Unauthorized: You can only delete your own company', 403);
+        }
+
+        $company->delete();
 
         return $this->success(null, 'Company deleted successfully', 200);
     }
 
-    public function addJob(JobRequest $request, $id)
-    {
-        // Add a new job to a company
-        $company = Company::findorFail($id);
-        if (!$company) {
-            return $this->error(null, 'Company not found', 404);
-        }
-        $validated = $request->validated();
-        $validated['company_id'] = $company->id;
-        $validated['company_logo'] = $company->logo;
 
-        $jobExists = Job::where('title', $validated['title'])
-            ->where('company_id', $company->id)
-            ->where('type', $validated['type'])
-            ->first();
-
-        if ($jobExists) {
-            return $this->error(null, 'Job with the same title and type already exists for this company', 409);
-        }
-
-
-        $new_job = Job::create($validated);
-        return $this->success($new_job, 'Job created successfully', 201);
-    }
-    public function getJobs($id)
-    {
-        // Get all jobs for a company
-        $company = Company::findorFail($id);
-        if (!$company) {
-            return $this->error(null, 'Company not found', 404);
-        }
-        $jobs = $company->jobs;
-        if ($jobs->isEmpty()) {
-            return $this->error(null, 'No jobs found for this company', 404);
-        }
-        return $this->success($jobs, 'Jobs retrieved successfully', 200);
-    }
     public function getApplicants($id)
     {
         // Get all applicants for a company

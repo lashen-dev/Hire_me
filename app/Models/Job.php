@@ -17,7 +17,7 @@ class Job extends Model
         'salary',
         'type',
         'is_available',
-        
+
     ];
 
     public function company()
@@ -29,7 +29,7 @@ class Job extends Model
         return $this->belongsToMany(Applicant::class,'applications', 'job_id', 'applicant_id')
             ->withPivot('status', 'cv');
     }
-    
+
     protected static function booted()
     {
         static::addGlobalScope('available', function ($query) {
@@ -37,7 +37,7 @@ class Job extends Model
         });
     }
 
-    public function scopeSearch($query, array $filters)
+    public function scopefilter($query, array $filters)
     {
         if ($filters['title'] ?? false) {
             $query->where('title', 'like', '%' . $filters['title'] . '%');
@@ -48,9 +48,12 @@ class Job extends Model
         if ($filters['salary'] ?? false) {
             $query->where('salary', '>=', $filters['salary']);
         }
-    }    
+        if ($filters['company_id'] ?? false) {
+        $query->where('company_id', $filters['company_id']);
+        }
+    }
 
-    
-    
+
+
 
 }

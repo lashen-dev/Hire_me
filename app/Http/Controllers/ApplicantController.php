@@ -57,11 +57,15 @@ class ApplicantController extends Controller
 
     public function destroy($id)
     {
+        $current_user = Auth::user();
         $applicant = Applicant::find($id);
-        if (!$applicant) {
-            return $this->error(null, 'Applicant not found', 404);
+        if (!$applicant){
+            return $this->error(null ,'applicant not found' , 404);
+        }
+        if ($current_user->id !== $applicant->user_id){
+            return $this->error(null , 'not allow to do this',403);
         }
         $applicant->delete();
-        return $this->success(null, 'Applicant deleted successfully', 200);
+        return $this->success(null , 'applicant deleted succesfully',200);
     }
 }
