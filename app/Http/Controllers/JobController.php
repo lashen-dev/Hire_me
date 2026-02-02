@@ -70,10 +70,18 @@ class JobController extends Controller
 
     public function destroy($id)
     {
-        // Delete a job
-        $job = Job::findOrFail($id);
+        $user = Auth::user();
+        $job = Job::with('company')->findOrFail($id);
+        $isOwner = $user->id === $job->company->user_id;
+        $isAdmin = $user->hasPermissionTo('delete-job');
+        if (!$isOwner && !$isAdmin)
+            {
+                return $this->error(null, 'Unauthorized: You can only delete your own jobs', 403);
+            }
+
         $job->delete();
-        return $this->success(null, 'Job deleted successfully', 200);
+
+        return $this->success(null, 'job deleted successfully', 200);
     }
 
 

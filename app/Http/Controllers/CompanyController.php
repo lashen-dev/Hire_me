@@ -84,19 +84,6 @@ class CompanyController extends Controller
     }
 
 
-    public function getApplicants($id)
-    {
-        // Get all applicants for a company
-        $company = Company::findorFail($id);
-        if (!$company) {
-            return $this->error(null, 'Company not found', 404);
-        }
-        $applicants = $company->applicants;
-        if ($applicants->isEmpty()) {
-            return $this->error(null, 'No applicants found for this company', 404);
-        }
-        return $this->success($applicants, 'Applicants retrieved successfully', 200);
-    }
 
     public function getApplications($id)
     {

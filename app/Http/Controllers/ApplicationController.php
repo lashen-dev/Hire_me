@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Auth;
 
 class ApplicationController extends Controller
 {
-    use HttpResponses , Notifiable;
+    use HttpResponses, Notifiable;
     public function index()
     {
         // Return a list of applications
@@ -35,7 +35,7 @@ class ApplicationController extends Controller
         $user = Auth::user();
         $application = Application::with('job')->findOrFail($id);
         $company = Company::where('user_id', $user->id)->first();
-        
+
         if ($application->job->company_id !== $company->id) {
             return $this->error(null, 'Unauthorized to update this application', 403);
         }
@@ -51,19 +51,37 @@ class ApplicationController extends Controller
             Applicant::where('id', $application->applicant_id)->update([
                 'company_id' => $application->job->company_id
             ]);
-            
         }
         $status = $validated['status'];
         $application->applicant->user->notify(new ApplicantStatus($status, $application->job->title));
 
-        return $this->success( null , 'Application status updated successfully', 200);
+        return $this->success(null, 'Application status updated successfully', 200);
     }
 
     public function destroy($id)
     {
-        // Delete an application
+        $user = Auth::user();
+
         $application = Application::findOrFail($id);
-        $application->delete();
-        return $this->success(null, 'Application deleted successfully', 200);
+
+        $isApplicantOwner = $application->applicant->user_id === $user->id;
+
+        $isAdmin = $user->hasRole('admin') || $user->hasPermissionTo('delete-application');
+
+        if ($isApplicantOwner) {
+            if ($application->status !== 'pending') {
+                return $this->error(null, 'Cannot withdraw application after it has been reviewed', 400);
+            }
+
+            $application->delete();
+            return $this->success(null, 'Application withdrawn successfully', 200);
+        }
+
+        if ($isAdmin) {
+            $application->delete();
+            return $this->success(null, 'Application deleted by admin', 200);
+        }
+
+        return $this->error(null, 'Unauthorized', 403);
     }
 }
