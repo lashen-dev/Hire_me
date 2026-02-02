@@ -150,14 +150,5 @@ class JobController extends Controller
         }
     }
 
-    public function getApplicants($jobId)
-    {
-        // Get applicants for a job
-        $job = Job::findOrFail($jobId);
-        $applicants = $job->applicants;
-        if (count($applicants) >= 1) {
-            return $this->success($applicants, 'Applicants retrieved successfully', 200);
-        }
-        return $this->error(null, 'No applicants found for this job', 404);
-    }
+
 }
