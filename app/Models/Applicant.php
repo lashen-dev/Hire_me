@@ -43,6 +43,12 @@ class Applicant extends Model
 
     public function scopefilter($query, array $filters)
     {
+        if ($filters['job_id'] ?? false) {
+        $query->whereHas('applications', function ($q) use ($filters) {
+            $q->where('job_id', $filters['job_id']);
+        });
+        }
+        
         if ($filters['company_id'] ?? false) {
             $query->where('company_id', $filters['company_id']);
         }
