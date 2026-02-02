@@ -83,19 +83,4 @@ class CompanyController extends Controller
         return $this->success(null, 'Company deleted successfully', 200);
     }
 
-
-
-    public function getApplications($id)
-    {
-        // Get all applications for a company
-        $company = Company::findorFail($id);
-        if (!$company) {
-            return $this->error(null, 'Company not found', 404);
-        }
-        $applications = $company->applications;
-        if ($applications->isEmpty()) {
-            return $this->error(null, 'No applications found for this company', 404);
-        }
-        return $this->success($applications, 'Applications retrieved successfully', 200);
-    }
 }

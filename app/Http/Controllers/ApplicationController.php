@@ -18,15 +18,44 @@ class ApplicationController extends Controller
     use HttpResponses, Notifiable;
     public function index()
     {
-        // Return a list of applications
-        $applications = Application::all();
+        $user = Auth::user();
+
+        $query = Application::with(['job', 'applicant']);
+
+        if ($user->role === 'applicant') {
+            $query->whereHas('applicant', function ($q) use ($user) {
+                $q->where('user_id', $user->id);
+            });
+        } elseif ($user->role === 'company') {
+            $query->whereHas('job', function ($q) use ($user) {
+                $q->where('company_id', $user->company->id);
+            });
+        }
+
+        $applications = $query->latest()->paginate(10);
+
         return $this->success($applications, 'Applications retrieved successfully', 200);
     }
 
     public function show($id)
     {
-        // Return a single application
-        $application = Application::findOrFail($id);
+        $user = Auth::user();
+
+        $application = Application::with(['job', 'applicant'])->findOrFail($id);
+
+        $isOwner = $application->applicant->user_id === $user->id;
+
+        $isCompanyOwner = false;
+        if ($user->role === 'company') {
+            $isCompanyOwner = $application->job->company_id === $user->company->id;
+        }
+
+        $isAdmin = $user->hasRole('admin') || $user->hasPermissionTo('view-application');
+
+        if (!$isOwner && !$isCompanyOwner && !$isAdmin) {
+            return $this->error(null, 'Unauthorized access', 403);
+        }
+
         return $this->success($application, 'Application retrieved successfully', 200);
     }
 
