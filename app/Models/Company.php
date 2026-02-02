@@ -10,7 +10,7 @@ use Illuminate\Notifications\Notifiable;
 
 class Company extends Model
 {
-    use HasFactory , Notifiable;
+    use HasFactory, Notifiable;
     protected $fillable = [
         'name',
         'logo',
@@ -47,5 +47,16 @@ class Company extends Model
             'id',               // المفتاح المحلي في جدول companies
             'id'                // المفتاح المحلي في جدول jobs
         );
+    }
+
+    public function scopeFilter($query, array $filters)
+    {
+        if ($filters['name'] ?? false) {
+            $query->where('name', 'like', '%' . $filters['name'] . '%');
+        }
+
+        if ($filters['location'] ?? false) {
+            $query->where('location', 'like', '%' . $filters['location'] . '%');
+        }
     }
 }

@@ -16,15 +16,20 @@ use Illuminate\Support\Facades\Auth;
 class CompanyController extends Controller
 {
     use HttpResponses;
-    public function index()
+    // App/Http/Controllers/CompanyController.php
+
+    public function index(Request $request)
     {
-        // Return a list of companies
-        $all_company = Company::all();
-        if ($all_company->isEmpty()) {
+        $companies = Company::query()
+            ->filter($request->all())
+            ->latest()
+            ->paginate(10);
+
+        if ($companies->isEmpty()) {
             return $this->error(null, 'No companies found', 404);
         }
 
-        return $this->success($all_company, 'Companies retrieved successfully', 200);
+        return $this->success($companies, 'Companies retrieved successfully');
     }
 
     public function show($id)
@@ -82,5 +87,4 @@ class CompanyController extends Controller
 
         return $this->success(null, 'Company deleted successfully', 200);
     }
-
 }
