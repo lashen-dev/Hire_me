@@ -15,7 +15,9 @@ use App\Traits\HttpResponses;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
@@ -24,49 +26,49 @@ class AuthController extends Controller
     use HttpResponses;
     public function register(RegisterRequest $request)
     {
-        // Validate the request
-        $validated = $request->validated();
+        DB::beginTransaction();
 
-        $user = User::create($validated);
+        try {
+            $validated = $request->validated();
+            $user = User::create($validated);
 
-        $code = rand(111111, 999999);
-
-        Otp::create([
-            'email' => $user->email,
-            'code' => $code,
-            'expires_at' => now()->addMinutes(10),
-        ]);
-
-        Mail::to($user->email)->send(new OtpMail($code));
-
-
-        // Check if the user is a company
-        if ($validated['role'] === 'company') {
-            // Create a new company for the user
-            $user->assignRole('company');
-            $company = Company::create([
-                'user_id' => $user->id,
-                'name' => $user->name,
-
+            $code = rand(111111, 999999);
+            Otp::create([
+                'email' => $user->email,
+                'code' => $code,
+                'expires_at' => now()->addMinutes(10),
             ]);
 
-            
-        } else {
-            // Create a new applicant for the user
-            $user->assignRole('applicant');
-            $applicant = Applicant::create([
-                'user_id' => $user->id,
-                'name' => $user->name,
-            ]);
+            Mail::to($user->email)->send(new OtpMail($code));
 
-            
+            if ($validated['role'] === 'company') {
+                $user->assignRole('company');
+                Company::create([
+                    'user_id' => $user->id,
+                    'name' => $user->name,
+                ]);
+            } else {
+                $user->assignRole('applicant');
+                Applicant::create([
+                    'user_id' => $user->id,
+                    'name' => $user->name,
+                ]);
+            }
+
+            DB::commit();
+
+            return $this->success([
+                'email' => $user->email,
+                'next_step' => 'verify_otp',
+            ], 'Registration successful. Please check your email.', 201);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Register Failed" . $e->getMessage());
+
+            return $this->error(null, 'Something went wrong during registration. Please try again.', 500);
         }
-
-        return $this->success([
-        'email' => $user->email,
-        'next_step' => 'verify_otp',
-    ], 'Registration successful. Please check your email to verify your account.', 201);
     }
+
 
     public function login(LoginRequest $request)
     {
@@ -79,8 +81,8 @@ class AuthController extends Controller
         }
 
         if ($user->email_verified_at === null) {
-        return $this->error(null, 'الحساب غير مفعل، يرجى تأكيد الإيميل أولاً', 403);
-    }
+            return $this->error(null, 'الحساب غير مفعل، يرجى تأكيد الإيميل أولاً', 403);
+        }
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
