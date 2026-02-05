@@ -6,7 +6,6 @@ use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DownloadController;
-use App\Http\Controllers\HomeController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OtpController;
@@ -15,7 +14,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 //public routes
-Route::get('/home', [HomeController::class, 'index']);
 Route::post('/verify-otp', [OtpController::class, 'verifyOtp']);
 
 // مسارات المصادقة (Authentication Routes)

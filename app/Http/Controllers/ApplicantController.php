@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ApplicantRequest;
-use App\Http\Requests\ApplicantUpdateRequest;
 use App\Http\Resources\ApplicantResource;
 use App\Models\Applicant;
 use App\Services\FileUploadService;
